@@ -17,6 +17,10 @@ from ptsemseg.metrics import scores
 
 def train(args):
 
+    args.dataset = 'ckplus'
+    args.arch = 'segnet'
+    args.img_rows = 256
+    args.img_cols = 256
     # Setup Dataloader
     data_loader = get_loader(args.dataset)
     data_path = get_data_path(args.dataset)
