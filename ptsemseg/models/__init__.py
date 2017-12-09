@@ -6,7 +6,7 @@ from ptsemseg.models.unet import *
 from ptsemseg.models.pspnet import *
 from ptsemseg.models.linknet import *
 
-
+from ptsemseg.models.unet2 import *
 
 def get_model(name, n_classes):
     model = _get_model_instance(name)
@@ -27,6 +27,8 @@ def get_model(name, n_classes):
                       is_batchnorm=True,
                       in_channels=3,
                       is_deconv=True)
+    elif name == 'unet2':
+        model = model(n_classes = n_classes)
     else:
         raise 'Model {} not available'.format(name)
 
@@ -41,4 +43,5 @@ def _get_model_instance(name):
         'segnet': segnet,
         'pspnet': pspnet,
         'linknet': linknet,
+        "unet2": unet2,
     }[name]

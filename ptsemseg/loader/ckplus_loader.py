@@ -23,7 +23,12 @@ class CkPlusLoader(data.Dataset):
     https://github.com/CSAILVision/placeschallenge/tree/master/sceneparsing
 
     """
-    def __init__(self, root, split="train", is_transform=False, img_size=512):
+
+    colors = [[0, 0, 0],
+              [255,  255, 255 ]]
+    label_colours = dict(zip(range(2), colors))
+
+    def __init__(self, root, split="train", is_transform=False, img_size=256):
         """__init__
 
         :param root:
@@ -36,6 +41,7 @@ class CkPlusLoader(data.Dataset):
         self.is_transform = is_transform
         self.n_classes = 2  # 0 is reserved for "other"
         self.img_size = img_size if isinstance(img_size, tuple) else (img_size, img_size)
+        # self.mean = np.array([104.00699, 116.66877, 122.67892])
         self.mean = np.array([115])
         self.files = {}
 
@@ -103,3 +109,17 @@ class CkPlusLoader(data.Dataset):
         lbl = torch.from_numpy(lbl).long()
 
         return img, lbl
+    def decode_segmap(self, temp):
+        r = temp.copy()
+        g = temp.copy()
+        b = temp.copy()
+        for l in range(0, self.n_classes):
+            r[temp == l] = self.label_colours[l][0]
+            g[temp == l] = self.label_colours[l][1]
+            b[temp == l] = self.label_colours[l][2]
+
+        rgb = np.zeros((temp.shape[0], temp.shape[1], 3))
+        rgb[:, :, 0] = r / 255.0
+        rgb[:, :, 1] = g / 255.0
+        rgb[:, :, 2] = b / 255.0
+        return rgb

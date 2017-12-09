@@ -11,15 +11,23 @@ import torchvision.models as models
 from torch.autograd import Variable
 from torch.utils import data
 from tqdm import tqdm
+import os
 
 from ptsemseg.loader import get_loader, get_data_path
 from ptsemseg.metrics import scores
 
 def test(args):
 
+    args.img_path = '/home/shehabk/dataSets/CKPLUS/unet_256/A/test/S077_007_00000029.png'
+    args.dataset = 'ckplus'
+    args.out_path = '/home/shehabk/Desktop/' + os.path.basename(args.img_path)
+
+    # args.arch = 'segnet'
+    args.model_path = 'unet2_ckplus_1_99.pkl'
     # Setup image
     print("Read Input Image from : {}".format(args.img_path))
-    img = misc.imread(args.img_path)
+    img = misc.imread(args.img_path,mode = 'RGB')
+
 
     data_loader = get_loader(args.dataset)
     data_path = get_data_path(args.dataset)
@@ -47,7 +55,7 @@ def test(args):
         images = Variable(img)
 
     outputs = model(images)
-    pred = np.squeeze(outputs.data.max(1)[1].cpu().numpy(), axis=1)
+    pred = np.squeeze(outputs.data.max(1 , keepdim=True )[1].cpu().numpy(), axis=1)
     decoded = loader.decode_segmap(pred[0])
     print(np.unique(pred))
     misc.imsave(args.out_path, decoded)
